@@ -11,7 +11,7 @@ import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = "worleycaves", name = "Worley Caves", version = "1.5.3", acceptableRemoteVersions = "*")
+@Mod(modid = "worleycaves", name = "Worley Caves", version = "1.5.4", acceptableRemoteVersions = "*", dependencies = "required-after:mycelium@[1.5.10,)")
 public class Main
 {
     public static final Logger LOGGER = LogManager.getLogger("worleycaves");

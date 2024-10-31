@@ -1,9 +1,10 @@
 package mods.tesseract.worleycaves.world;
 
 
+import mods.tesseract.mycelium.util.BlockPos;
+import mods.tesseract.mycelium.world.ChunkPrimer;
 import mods.tesseract.worleycaves.Main;
 import mods.tesseract.worleycaves.config.Configs;
-import mods.tesseract.worleycaves.util.BlockPos;
 import mods.tesseract.worleycaves.util.FastNoise;
 import mods.tesseract.worleycaves.util.WorleyUtil;
 import net.minecraft.block.Block;
