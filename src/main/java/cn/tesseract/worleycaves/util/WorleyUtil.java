@@ -1,4 +1,4 @@
-package mods.tesseract.worleycaves.util;
+package cn.tesseract.worleycaves.util;
 
 public class WorleyUtil {
 	private int m_seed = 1337;

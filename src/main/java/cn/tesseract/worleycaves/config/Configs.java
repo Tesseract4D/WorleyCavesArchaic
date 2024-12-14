@@ -1,4 +1,4 @@
-package mods.tesseract.worleycaves.config;
+package cn.tesseract.worleycaves.config;
 
 
 public class Configs

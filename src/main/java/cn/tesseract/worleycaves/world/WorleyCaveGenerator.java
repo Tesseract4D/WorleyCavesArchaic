@@ -1,12 +1,12 @@
-package mods.tesseract.worleycaves.world;
+package cn.tesseract.worleycaves.world;
 
 
-import mods.tesseract.mycelium.util.BlockPos;
-import mods.tesseract.mycelium.world.ChunkPrimer;
-import mods.tesseract.worleycaves.Main;
-import mods.tesseract.worleycaves.config.Configs;
-import mods.tesseract.worleycaves.util.FastNoise;
-import mods.tesseract.worleycaves.util.WorleyUtil;
+import cn.tesseract.mycelium.util.BlockPos;
+import cn.tesseract.mycelium.world.ChunkPrimer;
+import cn.tesseract.worleycaves.Main;
+import cn.tesseract.worleycaves.config.Configs;
+import cn.tesseract.worleycaves.util.FastNoise;
+import cn.tesseract.worleycaves.util.WorleyUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
@@ -431,8 +431,9 @@ public class WorleyCaveGenerator extends MapGenCaves {
                 //replace floating sand with sandstone
                 if (up == Blocks.sand) {
                     data.setBlockState(x, y + 1, z, Blocks.sandstone);
+                } else if (up == Blocks.gravel) {
+                    data.setBlockState(x, y + 1, z, filler);
                 }
-
             }
         }
     }

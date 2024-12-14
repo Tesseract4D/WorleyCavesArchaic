@@ -1,6 +1,6 @@
-package mods.tesseract.worleycaves.event;
+package cn.tesseract.worleycaves.event;
 
-import mods.tesseract.worleycaves.world.WorleyCaveGenerator;
+import cn.tesseract.worleycaves.world.WorleyCaveGenerator;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.terraingen.InitMapGenEvent;

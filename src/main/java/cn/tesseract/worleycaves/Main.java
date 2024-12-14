@@ -1,17 +1,17 @@
-package mods.tesseract.worleycaves;
+package cn.tesseract.worleycaves;
 
 
+import cn.tesseract.worleycaves.event.CaveEvent;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import mods.tesseract.worleycaves.config.Configs;
-import mods.tesseract.worleycaves.event.CaveEvent;
+import cn.tesseract.worleycaves.config.Configs;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = "worleycaves", name = "Worley Caves", version = "1.5.4", acceptableRemoteVersions = "*", dependencies = "required-after:mycelium@[1.5.10,)")
+@Mod(modid = "worleycaves", name = "Worley Caves", version = "1.6", acceptableRemoteVersions = "*", dependencies = "required-after:mycelium@[2.0,)")
 public class Main
 {
     public static final Logger LOGGER = LogManager.getLogger("worleycaves");
