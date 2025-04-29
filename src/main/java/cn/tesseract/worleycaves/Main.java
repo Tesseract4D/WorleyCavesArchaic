@@ -1,7 +1,6 @@
 package cn.tesseract.worleycaves;
 
 
-import cn.tesseract.worleycaves.config.Configs;
 import cn.tesseract.worleycaves.world.WorleyCaveGenerator;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -17,23 +16,33 @@ import org.apache.logging.log4j.Logger;
 @Mod(modid = "worleycaves", name = "Worley Caves", version = Tags.VERSION, acceptableRemoteVersions = "*", dependencies = "required-after:mycelium@[2.4.3,)")
 public class Main {
     public static final Logger LOGGER = LogManager.getLogger("worleycaves");
+    public static float noiseCutoffValue = -0.18f;
+    public static float warpAmplifier = 8.0f;
+    public static int easeInDepth = 15;
+    public static float verticalCompressionMultiplier = 2.0f;
+    public static float horizonalCompressionMultiplier = 1.0f;
+    public static int[] blackListedDims = {-1};
+    public static int maxCaveHeight = 128;
+    public static int minCaveHeight = 1;
+    public static String lavaBlock = "minecraft:lava";
+    public static int lavaDepth = 6;
+    public static boolean allowReplaceMoreBlocks = true;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent e) {
         MinecraftForge.TERRAIN_GEN_BUS.register(this);
         Configuration cfg = new Configuration(e.getSuggestedConfigurationFile());
-        Configs.noiseCutoffValue = cfg.getFloat("noiseCutoffValue", "cave", Configs.noiseCutoffValue, -1f, 1f, "Controls size of caves. Smaller values = larger caves. Between -1.0 and 1.0");
-        Configs.surfaceCutoffValue = cfg.getFloat("surfaceCutoffValue", "cave", Configs.surfaceCutoffValue, -1f, 1f, "Controls size of caves at the surface. Smaller values = more caves break through the surface. Between -1.0 and 1.0");
-        Configs.warpAmplifier = cfg.getFloat("warpAmplifier", "cave", Configs.warpAmplifier, 0f, Float.MAX_VALUE, "Controls how much to warp caves. Lower values = straighter caves");
-        Configs.easeInDepth = cfg.getInt("easeInDepth", "cave", Configs.easeInDepth, 0, Integer.MAX_VALUE, "Reduces number of caves at surface level, becoming more common until caves generate normally X number of blocks below the surface");
-        Configs.verticalCompressionMultiplier = cfg.getFloat("verticalCompressionMultiplier", "cave", Configs.verticalCompressionMultiplier, 0, Float.MAX_VALUE, "Squishes caves on the Y axis. Lower values = taller caves and more steep drops");
-        Configs.horizonalCompressionMultiplier = cfg.getFloat("horizonalCompressionMultiplier", "cave", Configs.horizonalCompressionMultiplier, 0, Float.MAX_VALUE, "Streches (when < 1.0) or compresses (when > 1.0) cave generation along X and Z axis");
-        Configs.blackListedDims = cfg.get("cave", "blackListedDims", Configs.blackListedDims, "Dimension IDs that will use Vanilla cave generation rather than Worley's Caves").getIntList();
-        Configs.maxCaveHeight = cfg.getInt("maxCaveHeight", "cave", Configs.maxCaveHeight, 1, 256, "Caves will not attempt to generate above this y level. Range 1-256");
-        Configs.minCaveHeight = cfg.getInt("minCaveHeight", "cave", Configs.minCaveHeight, 1, 256, "Caves will not attempt to generate below this y level. Range 1-256");
-        Configs.lavaBlock = cfg.getString("lavaBlock", "cave", Configs.lavaBlock, "Block to use when generating large lava lakes below lavaDepth (usually y=10)");
-        Configs.lavaDepth = cfg.getInt("lavaDepth", "cave", Configs.lavaDepth, 1, 256, "Air blocks at or below this y level will generate as lavaBlock");
-        Configs.allowReplaceMoreBlocks = cfg.getBoolean("allowReplaceMoreBlocks", "cave", Configs.allowReplaceMoreBlocks, "Allow replacing more blocks with caves (useful for mods which completely overwrite world gen)");
+        noiseCutoffValue = cfg.getFloat("noiseCutoffValue", "cave", noiseCutoffValue, -1f, 1f, "Controls size of caves. Smaller values = larger caves. Between -1.0 and 1.0");
+        warpAmplifier = cfg.getFloat("warpAmplifier", "cave", warpAmplifier, 0f, Float.MAX_VALUE, "Controls how much to warp caves. Lower values = straighter caves");
+        easeInDepth = cfg.getInt("easeInDepth", "cave", easeInDepth, 0, Integer.MAX_VALUE, "Reduces number of caves at surface level, becoming more common until caves generate normally X number of blocks below the surface");
+        verticalCompressionMultiplier = cfg.getFloat("verticalCompressionMultiplier", "cave", verticalCompressionMultiplier, 0, Float.MAX_VALUE, "Squishes caves on the Y axis. Lower values = taller caves and more steep drops");
+        horizonalCompressionMultiplier = cfg.getFloat("horizonalCompressionMultiplier", "cave", horizonalCompressionMultiplier, 0, Float.MAX_VALUE, "Streches (when < 1.0) or compresses (when > 1.0) cave generation along X and Z axis");
+        blackListedDims = cfg.get("cave", "blackListedDims", blackListedDims, "Dimension IDs that will use Vanilla cave generation rather than Worley's Caves").getIntList();
+        maxCaveHeight = cfg.getInt("maxCaveHeight", "cave", maxCaveHeight, 1, 256, "Caves will not attempt to generate above this y level. Range 1-256");
+        minCaveHeight = cfg.getInt("minCaveHeight", "cave", minCaveHeight, 1, 256, "Caves will not attempt to generate below this y level. Range 1-256");
+        lavaBlock = cfg.getString("lavaBlock", "cave", lavaBlock, "Block to use when generating large lava lakes below lavaDepth (usually y=10)");
+        lavaDepth = cfg.getInt("lavaDepth", "cave", lavaDepth, 1, 256, "Air blocks at or below this y level will generate as lavaBlock");
+        allowReplaceMoreBlocks = cfg.getBoolean("allowReplaceMoreBlocks", "cave", allowReplaceMoreBlocks, "Allow replacing more blocks with caves (useful for mods which completely overwrite world gen)");
         if (cfg.hasChanged()) cfg.save();
     }
 

@@ -1,6 +1,7 @@
 package cn.tesseract.worleycaves.world;
 
 
+import cn.tesseract.worleycaves.Main;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
@@ -60,7 +61,7 @@ public class MapGenSurfaceCaves extends MapGenCaves {
     public boolean canReplaceBlock(Block block, Block blockUp) {
         if (block == null || (blockUp != null && blockUp.getMaterial() == Material.water))
             return false;
-        return block.getMaterial() == Material.rock
+        return (Main.allowReplaceMoreBlocks && block.getMaterial() == Material.rock)
             || block == Blocks.stone
             || block == Blocks.dirt
             || block == Blocks.grass

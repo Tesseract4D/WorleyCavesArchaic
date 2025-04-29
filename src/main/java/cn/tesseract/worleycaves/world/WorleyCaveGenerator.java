@@ -2,7 +2,6 @@ package cn.tesseract.worleycaves.world;
 
 import cn.tesseract.mycelium.world.ChunkPrimer;
 import cn.tesseract.worleycaves.Main;
-import cn.tesseract.worleycaves.config.Configs;
 import cn.tesseract.worleycaves.util.FastNoise;
 import cn.tesseract.worleycaves.util.WorleyUtil;
 import net.minecraft.block.Block;
@@ -34,34 +33,28 @@ public class WorleyCaveGenerator extends MapGenCaves {
     private static float easeInDepth;
     private static float yCompression;
     private static float xzCompression;
-    private static float surfaceCutoff;
     private static int lavaDepth;
     private static int HAS_CAVES_FLAG = 129;
 
     public WorleyCaveGenerator() {
-        maxCaveHeight = Configs.maxCaveHeight;
-        minCaveHeight = Configs.minCaveHeight;
-        noiseCutoff = Configs.noiseCutoffValue;
-        warpAmplifier = Configs.warpAmplifier;
-        easeInDepth = Configs.easeInDepth;
-        yCompression = Configs.verticalCompressionMultiplier;
-        xzCompression = Configs.horizonalCompressionMultiplier;
-        surfaceCutoff = Configs.surfaceCutoffValue;
-        lavaDepth = Configs.lavaDepth;
+        maxCaveHeight = Main.maxCaveHeight;
+        minCaveHeight = Main.minCaveHeight;
+        noiseCutoff = Main.noiseCutoffValue;
+        warpAmplifier = Main.warpAmplifier;
+        easeInDepth = Main.easeInDepth;
+        yCompression = Main.verticalCompressionMultiplier;
+        xzCompression = Main.horizonalCompressionMultiplier;
+        lavaDepth = Main.lavaDepth;
 
-        lava = (Block) Block.blockRegistry.getObject(Configs.lavaBlock);
+        lava = (Block) Block.blockRegistry.getObject(Main.lavaBlock);
         if (lava == null) {
-            Main.LOGGER.error("Cannont find block " + Configs.lavaBlock);
+            Main.LOGGER.error("Cannont find block " + Main.lavaBlock);
             lava = Blocks.air;
         }
 
-        //try and grab other modded cave gens, like swiss cheese caves or Quark big caves
-        //our replace cavegen event will ignore cave events when the original cave class passed in is a Worley cave
         moddedCaveGen = TerrainGen.getModdedMapGen(this, InitMapGenEvent.EventType.CAVE);
-        if (moddedCaveGen != this)
-            replacementCaves = moddedCaveGen;
-        else
-            replacementCaves = new MapGenCaves(); //default to vanilla caves if there are no other modded cave gens
+        if (moddedCaveGen != this) replacementCaves = moddedCaveGen;
+        else replacementCaves = new MapGenCaves();
     }
 
     @Override
@@ -77,7 +70,7 @@ public class WorleyCaveGenerator extends MapGenCaves {
         displacementNoisePerlin.SetNoiseType(FastNoise.NoiseType.Perlin);
         displacementNoisePerlin.SetFrequency(0.05f);
 
-        for (int blacklistedDim : Configs.blackListedDims) {
+        for (int blacklistedDim : Main.blackListedDims) {
             if (currentDim == blacklistedDim) {
                 this.replacementCaves.func_151539_a(provider, worldIn, x, z, blocks);
                 return;
@@ -168,7 +161,7 @@ public class WorleyCaveGenerator extends MapGenCaves {
                                         currentBiome = worldObj.provider.getBiomeGenForCoords(realPos[0], realPos[2]);//world.getBiome(realPos);
 
                                         //use isDigable to skip leaves/wood getting counted as surface
-                                        if (canReplaceBlock(currentBlock, Blocks.air) || isBiomeBlock(chunkPrimerIn, realX, realZ, currentBlock, currentBiome)) {
+                                        if (canReplaceBlock(currentBlock, Blocks.air) || currentBlock == currentBiome.topBlock || currentBlock == currentBiome.fillerBlock) {
                                             depth++;
                                         }
                                     } else {
@@ -188,7 +181,7 @@ public class WorleyCaveGenerator extends MapGenCaves {
 
                                 //increase cutoff as we get closer to the minCaveHeight so it's not all flat floors
                                 if (localY < (minCaveHeight + 5)) {
-                                    adjustedNoiseCutoff += ((minCaveHeight + 5) - localY) * 0.05;
+                                    adjustedNoiseCutoff += (float) (((minCaveHeight + 5) - localY) * 0.05);
                                 }
 
                                 if (noiseVal > adjustedNoiseCutoff) {
@@ -213,7 +206,7 @@ public class WorleyCaveGenerator extends MapGenCaves {
                                         if (currentBiome == null)
                                             currentBiome = worldObj.provider.getBiomeGenForCoords(realPos[0], realPos[2]);//world.getBiome(realPos);
 
-                                        boolean foundTopBlock = isTopBlock(currentBlock, currentBiome);
+                                        boolean foundTopBlock = currentBlock == currentBiome.topBlock;
                                         digBlock(chunkPrimerIn, localX, localY, localZ, chunkX, chunkZ, foundTopBlock, currentBlock, aboveBlock, currentBiome);
                                     }
                                 }
@@ -232,18 +225,6 @@ public class WorleyCaveGenerator extends MapGenCaves {
                     }
                 }
             }
-        }
-    }
-
-    public static int getBlockIndex(int x, int y, int z) {
-        return x << 12 | z << 8 | y;
-    }
-
-    public static double clampedLerp(double lowerBnd, double upperBnd, double slide) {
-        if (slide < 0.0D) {
-            return lowerBnd;
-        } else {
-            return slide > 1.0D ? upperBnd : lowerBnd + (upperBnd - lowerBnd) * slide;
         }
     }
 
@@ -286,10 +267,8 @@ public class WorleyCaveGenerator extends MapGenCaves {
                             //if noise is below cutoff, adjust values of neighbors
                             //helps prevent caves fracturing during interpolation
 
-                            if (x > 0)
-                                noiseSamples[x - 1][y][z] = (noise * 0.2f) + (noiseSamples[x - 1][y][z] * 0.8f);
-                            if (z > 0)
-                                noiseSamples[x][y][z - 1] = (noise * 0.2f) + (noiseSamples[x][y][z - 1] * 0.8f);
+                            if (x > 0) noiseSamples[x - 1][y][z] = (noise * 0.2f) + (noiseSamples[x - 1][y][z] * 0.8f);
+                            if (z > 0) noiseSamples[x][y][z - 1] = (noise * 0.2f) + (noiseSamples[x][y][z - 1] * 0.8f);
 
                             //more heavily adjust y above 'air block' noise values to give players more headroom
                             if (y < 128) {
@@ -312,12 +291,6 @@ public class WorleyCaveGenerator extends MapGenCaves {
         return noiseSamples;
     }
 
-    private int getSurfaceHeight(ChunkPrimer chunkPrimerIn, int localX, int localZ) {
-        //Using a recursive binary search to find the surface
-        return recursiveBinarySurfaceSearch(chunkPrimerIn, localX, localZ, 255, 0);
-    }
-
-    //Recursive binary search, this search always converges on the surface in 8 in cycles for the range 255 >= y >= 0
     private int recursiveBinarySurfaceSearch(ChunkPrimer chunkPrimer, int localX, int localZ, int searchTop, int searchBottom) {
         int top = searchTop;
         if (searchTop > searchBottom) {
@@ -339,40 +312,19 @@ public class WorleyCaveGenerator extends MapGenCaves {
             int test = recursiveBinarySurfaceSearch(primer, cords[i], cords[i + 1], 255, 0);
             if (test > y) {
                 y = test;
-                if (y > maxCaveHeight)
-                    return y;
+                if (y > maxCaveHeight) return y;
             }
         }
         return y;
     }
 
     public boolean canReplaceBlock(Block block, Block blockUp) {
-        if (block == null || (blockUp != null && blockUp.getMaterial() == Material.water))
-            return false;
-        return block.getMaterial() == Material.rock
-            || block == Blocks.stone
-            || block == Blocks.dirt
-            || block == Blocks.grass
-            || block == Blocks.hardened_clay
-            || block == Blocks.stained_hardened_clay
-            || block == Blocks.sandstone
-            || block == Blocks.mycelium
-            || block == Blocks.snow_layer
-            || block == Blocks.snow
-            || block == Blocks.sand
-            || block == Blocks.gravel;
-    }
-
-    private boolean isBiomeBlock(ChunkPrimer primer, int realX, int realZ, Block block, BiomeGenBase biome) {
-        return block != null && (block == biome.topBlock || block == biome.fillerBlock);
+        if (block == null || (blockUp != null && blockUp.getMaterial() == Material.water)) return false;
+        return (Main.allowReplaceMoreBlocks && block.getMaterial() == Material.rock) || block == Blocks.stone || block == Blocks.dirt || block == Blocks.grass || block == Blocks.hardened_clay || block == Blocks.stained_hardened_clay || block == Blocks.sandstone || block == Blocks.mycelium || block == Blocks.snow_layer || block == Blocks.snow || block == Blocks.sand || block == Blocks.gravel;
     }
 
     private boolean isFluidBlock(Block blocky) {
         return blocky instanceof BlockLiquid || blocky instanceof IFluidBlock;
-    }
-
-    private boolean isTopBlock(Block block, BiomeGenBase biome) {
-        return block == biome.topBlock;
     }
 
     protected void digBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ, boolean foundTop, Block block, Block up, BiomeGenBase biome) {
