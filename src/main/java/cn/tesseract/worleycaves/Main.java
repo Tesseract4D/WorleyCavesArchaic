@@ -1,25 +1,26 @@
 package cn.tesseract.worleycaves;
 
 
-import cn.tesseract.worleycaves.event.CaveEvent;
+import cn.tesseract.worleycaves.config.Configs;
+import cn.tesseract.worleycaves.world.WorleyCaveGenerator;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cn.tesseract.worleycaves.config.Configs;
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.event.terraingen.InitMapGenEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = "worleycaves", name = "Worley Caves", version = "1.6", acceptableRemoteVersions = "*", dependencies = "required-after:mycelium@[2.0,)")
-public class Main
-{
+@Mod(modid = "worleycaves", name = "Worley Caves", version = Tags.VERSION, acceptableRemoteVersions = "*", dependencies = "required-after:mycelium@[2.4.3,)")
+public class Main {
     public static final Logger LOGGER = LogManager.getLogger("worleycaves");
 
-	@EventHandler
-	public static void preInit(FMLPreInitializationEvent e)
-	{
-        MinecraftForge.TERRAIN_GEN_BUS.register(new CaveEvent());
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent e) {
+        MinecraftForge.TERRAIN_GEN_BUS.register(this);
         Configuration cfg = new Configuration(e.getSuggestedConfigurationFile());
         Configs.noiseCutoffValue = cfg.getFloat("noiseCutoffValue", "cave", Configs.noiseCutoffValue, -1f, 1f, "Controls size of caves. Smaller values = larger caves. Between -1.0 and 1.0");
         Configs.surfaceCutoffValue = cfg.getFloat("surfaceCutoffValue", "cave", Configs.surfaceCutoffValue, -1f, 1f, "Controls size of caves at the surface. Smaller values = more caves break through the surface. Between -1.0 and 1.0");
@@ -34,5 +35,14 @@ public class Main
         Configs.lavaDepth = cfg.getInt("lavaDepth", "cave", Configs.lavaDepth, 1, 256, "Air blocks at or below this y level will generate as lavaBlock");
         Configs.allowReplaceMoreBlocks = cfg.getBoolean("allowReplaceMoreBlocks", "cave", Configs.allowReplaceMoreBlocks, "Allow replacing more blocks with caves (useful for mods which completely overwrite world gen)");
         if (cfg.hasChanged()) cfg.save();
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onCaveEvent(InitMapGenEvent event) {
+        //only replace cave gen if the original gen passed isn't a worley cave
+        if (event.type == InitMapGenEvent.EventType.CAVE && !event.originalGen.getClass().equals(WorleyCaveGenerator.class)) {
+            //Main.LOGGER.info("Replacing cave generation with Worley Caves");
+            event.newGen = new WorleyCaveGenerator();
+        }
     }
 }

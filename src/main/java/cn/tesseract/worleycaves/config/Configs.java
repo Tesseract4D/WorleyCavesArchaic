@@ -23,7 +23,7 @@ public class Configs
 
     public static String lavaBlock = "minecraft:lava";
 
-    public static int lavaDepth = 10;
+    public static int lavaDepth = 6;
 
     public static boolean allowReplaceMoreBlocks = true;
 }
