@@ -25,6 +25,7 @@ public class WorleyCaveGenerator extends MapGenCaves {
     private FastNoise displacementNoisePerlin = new FastNoise();
     private MapGenBase replacementCaves;
     private MapGenBase moddedCaveGen;
+    private static int HAS_CAVES_FLAG = 129;
     private static Block lava;
     private static int maxCaveHeight;
     private static int minCaveHeight;
@@ -34,7 +35,6 @@ public class WorleyCaveGenerator extends MapGenCaves {
     private static float yCompression;
     private static float xzCompression;
     private static int lavaDepth;
-    private static int HAS_CAVES_FLAG = 129;
 
     public WorleyCaveGenerator() {
         maxCaveHeight = Main.maxCaveHeight;
