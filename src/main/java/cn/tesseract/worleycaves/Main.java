@@ -16,9 +16,8 @@ import org.apache.logging.log4j.Logger;
 @Mod(modid = "worleycaves", name = "Worley Caves", version = Tags.VERSION, acceptableRemoteVersions = "*", dependencies = "required-after:mycelium@[2.4.3,)")
 public class Main {
     public static final Logger LOGGER = LogManager.getLogger("worleycaves");
-    public static float noiseCutoffValue = -0.18f;
+    public static float noiseCutoffValue = -0.14f;
     public static float warpAmplifier = 8.0f;
-    public static int easeInDepth = 15;
     public static float verticalCompressionMultiplier = 2.0f;
     public static float horizonalCompressionMultiplier = 1.0f;
     public static int[] blackListedDims = {-1};
@@ -34,7 +33,6 @@ public class Main {
         Configuration cfg = new Configuration(e.getSuggestedConfigurationFile());
         noiseCutoffValue = cfg.getFloat("noiseCutoffValue", "cave", noiseCutoffValue, -1f, 1f, "Controls size of caves. Smaller values = larger caves. Between -1.0 and 1.0");
         warpAmplifier = cfg.getFloat("warpAmplifier", "cave", warpAmplifier, 0f, Float.MAX_VALUE, "Controls how much to warp caves. Lower values = straighter caves");
-        easeInDepth = cfg.getInt("easeInDepth", "cave", easeInDepth, 0, Integer.MAX_VALUE, "Reduces number of caves at surface level, becoming more common until caves generate normally X number of blocks below the surface");
         verticalCompressionMultiplier = cfg.getFloat("verticalCompressionMultiplier", "cave", verticalCompressionMultiplier, 0, Float.MAX_VALUE, "Squishes caves on the Y axis. Lower values = taller caves and more steep drops");
         horizonalCompressionMultiplier = cfg.getFloat("horizonalCompressionMultiplier", "cave", horizonalCompressionMultiplier, 0, Float.MAX_VALUE, "Streches (when < 1.0) or compresses (when > 1.0) cave generation along X and Z axis");
         blackListedDims = cfg.get("cave", "blackListedDims", blackListedDims, "Dimension IDs that will use Vanilla cave generation rather than Worley's Caves").getIntList();

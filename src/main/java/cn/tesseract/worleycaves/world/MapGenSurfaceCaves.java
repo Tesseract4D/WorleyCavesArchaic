@@ -67,6 +67,7 @@ public class MapGenSurfaceCaves extends MapGenCaves {
             || block == Blocks.grass
             || block == Blocks.hardened_clay
             || block == Blocks.stained_hardened_clay
+            || block == Blocks.snow_layer
             || block == Blocks.sandstone
             || block == Blocks.mycelium
             || block == Blocks.sand
